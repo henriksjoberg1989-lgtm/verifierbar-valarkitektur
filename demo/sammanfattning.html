@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<title>Sammanfattning — Verifierbar valarkitektur</title>
+<style>
+  @page { size: A4; margin: 18mm 20mm 18mm 20mm; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+    font-size: 9.5pt;
+    line-height: 1.5;
+    color: #1a1d21;
+    max-width: 210mm;
+    margin: 0 auto;
+    padding: 18mm 20mm;
+  }
+
+  .header {
+    border-bottom: 2.5pt solid #1f3a5f;
+    padding-bottom: 8pt;
+    margin-bottom: 12pt;
+  }
+  .header h1 {
+    font-size: 14pt;
+    font-weight: 700;
+    color: #1f3a5f;
+    margin-bottom: 2pt;
+  }
+  .header .subtitle {
+    font-size: 9pt;
+    color: #5b6470;
+    font-style: italic;
+  }
+  .header .meta {
+    font-size: 8pt;
+    color: #5b6470;
+    margin-top: 4pt;
+  }
+
+  .problem {
+    margin-bottom: 10pt;
+  }
+  .problem h2 {
+    font-size: 10pt;
+    font-weight: 700;
+    color: #1f3a5f;
+    margin-bottom: 3pt;
+  }
+  .problem p {
+    margin-bottom: 3pt;
+  }
+  .problem ol {
+    margin-left: 14pt;
+  }
+  .problem li {
+    margin-bottom: 2pt;
+  }
+
+  .solution h2 {
+    font-size: 10pt;
+    font-weight: 700;
+    color: #1f3a5f;
+    margin-bottom: 4pt;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8.5pt;
+    margin-bottom: 10pt;
+  }
+  table th {
+    background: #1f3a5f;
+    color: #fff;
+    padding: 4pt 6pt;
+    text-align: left;
+    font-size: 8pt;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+  }
+  table td {
+    padding: 3.5pt 6pt;
+    border-bottom: 0.5pt solid #d8dce2;
+    vertical-align: top;
+  }
+  table tr:last-child td { border-bottom: none; }
+  table td:first-child { font-weight: 600; color: #1f3a5f; }
+
+  .phases {
+    margin-bottom: 10pt;
+  }
+  .phases h2 {
+    font-size: 10pt;
+    font-weight: 700;
+    color: #1f3a5f;
+    margin-bottom: 3pt;
+  }
+  .phases ol {
+    margin-left: 14pt;
+  }
+  .phases li {
+    margin-bottom: 2pt;
+  }
+  .phases li strong {
+    color: #1f3a5f;
+  }
+
+  .demo-section {
+    background: #eaf0f7;
+    border-left: 2.5pt solid #1f3a5f;
+    padding: 6pt 10pt;
+    margin-bottom: 10pt;
+    border-radius: 0 3pt 3pt 0;
+  }
+  .demo-section h2 {
+    font-size: 9.5pt;
+    font-weight: 700;
+    color: #1f3a5f;
+    margin-bottom: 2pt;
+  }
+  .demo-section p {
+    font-size: 9pt;
+  }
+  .demo-section a {
+    color: #2e5c8a;
+    word-break: break-all;
+  }
+
+  .honesty {
+    font-size: 8.5pt;
+    color: #5b6470;
+    border-top: 0.5pt solid #d8dce2;
+    padding-top: 6pt;
+    margin-top: 6pt;
+  }
+  .honesty h2 {
+    font-size: 9pt;
+    font-weight: 700;
+    color: #5b6470;
+    margin-bottom: 2pt;
+  }
+  .honesty ul {
+    margin-left: 12pt;
+  }
+  .honesty li {
+    margin-bottom: 1pt;
+  }
+
+  .footer {
+    font-size: 8pt;
+    color: #5b6470;
+    margin-top: 8pt;
+    border-top: 0.5pt solid #d8dce2;
+    padding-top: 4pt;
+  }
+
+  @media print {
+    body { padding: 0; }
+    .demo-section { background: #eaf0f7 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    table th { background: #1f3a5f !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Verifierbar valarkitektur för svenska vallokaler</h1>
+  <div class="subtitle">Sammanfattning av teknisk specifikation, version 2.1</div>
+  <div class="meta">Utkast för granskning &middot; September 2026 &middot; Kopplas till Valmyndighetens regeringsuppdrag om digitala röstlängder (redovisas 15 januari 2027)</div>
+</div>
+
+<div class="problem">
+  <h2>Problemet</h2>
+  <p>Det svenska valsystemet är starkt på valhemlighet och öppenhet, men saknar tre egenskaper som digitaliseringen av röstlängder gör brådskande:</p>
+  <ol>
+    <li><strong>Ingen verifiering av räkningsresultat.</strong> Sverige saknar riskbegränsad omräkning (RLA). Vid misstanke om felräkning kan bara full manuell omräkning beslutas.</li>
+    <li><strong>Resultattransporten saknar integritetsskydd.</strong> Från vallokal till kommun till central nivå transporteras resultat utan kryptografiskt skydd.</li>
+    <li><strong>Digital avprickning hotar valhemligheten.</strong> En digital röstlängd skapar en koppling mellan väljarens identitet och röstavgivandet som i papperssystemet inte existerar.</li>
+  </ol>
+</div>
+
+<div class="solution">
+  <h2>Lösningen</h2>
+  <p>Digitalisera räkningen, transporten och granskningen &mdash; inte själva rösten. Papperssedeln förblir det auktoritativa originalet. Arkitekturen bygger på fyra pelare:</p>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Egenskap</th>
+      <th>Dagens system</th>
+      <th>Föreslagen arkitektur</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Räkningsverifiering</td>
+      <td>Full omräkning vid beslut</td>
+      <td>Riskbegränsad omräkning (BRAVO), statistiskt stickprov</td>
+    </tr>
+    <tr>
+      <td>Resultattransport</td>
+      <td>Mänsklig, utan kryptografiskt skydd</td>
+      <td>Signerat protokoll i Merklelogg, publik rot</td>
+    </tr>
+    <tr>
+      <td>Tillgänglighet</td>
+      <td>Pappersvalsedel</td>
+      <td>VVPAT-terminal med skärm, ljud, anpassat gränssnitt</td>
+    </tr>
+    <tr>
+      <td>Valhemlighet</td>
+      <td>Organisatoriskt skydd</td>
+      <td>Matematiskt bruten koppling (blindsignerad token)</td>
+    </tr>
+    <tr>
+      <td>Dubbelröstning</td>
+      <td>Manuell avprickning</td>
+      <td>Binär flagga + blindsignerad behörighetstoken</td>
+    </tr>
+    <tr>
+      <td>E-legitimation</td>
+      <td>Ej integrerad</td>
+      <td>Federation: Sverige-id, BankID, Freja, eIDAS, manuell</td>
+    </tr>
+    <tr>
+      <td>Nätverksberoende</td>
+      <td>Lågt (papper)</td>
+      <td>Offline-först, degraderar till pappersprocess</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="phases">
+  <h2>Genomförande</h2>
+  <ol>
+    <li><strong>Fas 1 (0&ndash;12 mån):</strong> RLA-verktyg, signerade protokoll, Merklelogg. Pilot i begränsat antal vallokaler. Ingen lagändring krävs.</li>
+    <li><strong>Fas 2 (12&ndash;30 mån):</strong> VVPAT-terminal, reproducerbara byggen, TPM-attestering.</li>
+    <li><strong>Fas 3 (24&ndash;42 mån):</strong> Federation, blindsignerad token, avprickningstjänst.</li>
+    <li><strong>Fas 4 (option):</strong> Mixnet med verifieringskod, endast om den öppna räkningen är politiskt löst.</li>
+  </ol>
+  <p style="margin-top:4pt"><strong>Ingen grundlagsändring krävs. Ingen distansröstning. Den öppna räkningen bevaras.</strong></p>
+</div>
+
+<div class="demo-section">
+  <h2>Interaktiv demonstration</h2>
+  <p>En fullständig demonstration finns tillgänglig som visar hela flödet &mdash; från nyckelceremoni till oberoende granskning &mdash; med öppen källkod som kan granskas i webbläsaren. Demon inkluderar ett korrelationsangrepp som jämför den föreslagna arkitekturen med en modell utan blindsignatur.</p>
+  <p><strong>Demon:</strong> <a href="#">https://henriksjoberg.github.io/verifierbar-valarkitektur/demo/index.html</a><br>
+  <strong>Whitepaper:</strong> <a href="#">https://henriksjoberg.github.io/verifierbar-valarkitektur/demo/index.html</a></p>
+</div>
+
+<div class="honesty">
+  <h2>Öppna problem som erkänns</h2>
+  <ul>
+    <li>Bärartokens överlåtbarhet hanteras fysiskt, inte kryptografiskt.</li>
+    <li>Tidskorrelation som restrisk hanteras organisatoriskt.</li>
+    <li>Den öppna räkningens framtid är olöst &mdash; och det är det tyngsta hindret.</li>
+    <li>Sverige-ids oprövade driftstatus kräver att federationen inte görs beroende av en enskild utfärdare.</li>
+  </ul>
+</div>
+
+<div class="footer">
+  Detta dokument är en sammanfattning. Fullständig specifikation, källkod och demonstration finns tillgängligt för granskning.
+  Kontakt: Henrik Sjöberg &middot; henriksjoberg7@gmail.com &middot; 0760-700 175
+</div>
+
+</body>
+</html>

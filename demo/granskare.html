@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>DEMONSTRATION — Oberoende granskning av valresultat</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .granskarlayout { max-width: 1180px; margin: 0 auto; padding: 24px 28px 60px; }
+  .granskarpanel { background: var(--vit); border: 1px solid var(--linje); border-radius: 6px; margin-bottom: 20px; overflow: hidden; }
+  .granskarpanel > h2 {
+    margin: 0; padding: 13px 18px; font-size: 15px; color: var(--blå);
+    background: #fbfcfd; border-bottom: 1px solid var(--linje);
+  }
+  .granskarpanel > h2 span { font-size: 11.5px; color: var(--text-mjuk); font-weight: 400; margin-left: 10px; }
+  .granskarkropp { padding: 18px; }
+
+  .tärningar { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+  .tärning {
+    width: 46px; height: 46px; border: 1px solid var(--linje); border-radius: 5px;
+    background: #fff; display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 20px; font-weight: 700; color: var(--blå);
+  }
+  .tärning.rullar { animation: skaka 0.09s linear infinite; color: var(--text-mjuk); }
+  @keyframes skaka { 0%{transform:translateY(0) rotate(0)} 50%{transform:translateY(-2px) rotate(-4deg)} 100%{transform:translateY(0) rotate(0)} }
+
+  .riskkurva { font-family: var(--mono); font-size: 11px; background: #1a1f26; color: #cfe3ff; padding: 11px 13px; border-radius: 4px; max-height: 190px; overflow-y: auto; line-height: 1.7; }
+  .riskkurva div.ok  { color: #8ee0a8; }
+  .riskkurva div.fara{ color: #ff9d8a; }
+
+  .protokollkort { border: 1px solid var(--linje); border-radius: 4px; padding: 12px 14px; margin-bottom: 10px; font-size: 13px; }
+  .protokollkort.manipulerat { border-color: var(--röd); background: var(--röd-mjuk); }
+  .protokollrad { display: flex; gap: 14px; flex-wrap: wrap; align-items: baseline; }
+  .protokollrad b { font-size: 13.5px; }
+  .bevisstatus { margin-left: auto; font-family: var(--mono); font-size: 11.5px; font-weight: 700; }
+  .bevisstatus.ok  { color: var(--grön); }
+  .bevisstatus.nej { color: var(--röd); }
+
+  input[type="text"].entropi {
+    font-family: var(--mono); font-size: 12.5px; padding: 8px 11px;
+    border: 1px solid var(--linje); border-radius: 4px; width: 100%; max-width: 520px;
+  }
+</style>
+</head>
+<body>
+
+<div class="demo-banner">
+  Teknisk demonstration — inte ett riktigt val
+  <small>Oberoende granskning · Ej en myndighetstjänst · Alla resultat är påhittade</small>
+</div>
+
+<header class="sidhuvud">
+  <div class="sidhuvud-inner">
+    <svg class="vapen" viewBox="0 0 52 60" aria-hidden="true">
+      <path d="M26 3 L49 12 V30 C49 45 38 55 26 58 C14 55 3 45 3 30 V12 Z"
+            fill="none" stroke="#c9a227" stroke-width="2.2"/>
+      <circle cx="26" cy="26" r="9" fill="none" stroke="#8fb4dd" stroke-width="1.8"/>
+      <path d="M33 33 L44 46" stroke="#8fb4dd" stroke-width="2.6" stroke-linecap="round"/>
+    </svg>
+    <div>
+      <h1>Oberoende granskning</h1>
+      <p class="underrubrik">
+        Verifierar ett publicerat valresultat utan att lita på valsystemet.
+        Kräver ingen behörighet och ingen del av valmyndighetens infrastruktur.
+      </p>
+    </div>
+    <div class="sidhuvud-meta">
+      <div><b id="meta-val">—</b></div>
+      <div id="meta-källa"></div>
+    </div>
+  </div>
+</header>
+
+<div class="granskarlayout">
+
+  <div class="notis">
+    <strong>Vad denna sida gör — och inte gör</strong>
+    <p>
+      Sidan utför två skilda verifieringar. <strong>Merkleloggen</strong> visar att ett publicerat
+      resultatprotokoll inte har bytts ut i efterhand — det är <em>loggintegritet</em>.
+      <strong>Den riskbegränsade omräkningen</strong> visar att rösterna faktiskt räknats rätt —
+      det är <em>valintegritet</em>. Ingendera räcker ensam. En hashkedja som bara visar att
+      antalet avprickade matchar antalet röster, vilket var förslaget i whitepaperns första utkast,
+      säger ingenting om rösterna räknats rätt.
+    </p>
+  </div>
+
+  <!-- ================= UNDERLAG ================= -->
+  <div class="notis" id="underlagspanel">
+    <strong>Vilket underlag granskas</strong>
+    <p id="underlagstext">—</p>
+    <div class="knapprad" style="margin-top:12px">
+      <button class="knapp sekundär" id="btn-underlag-demo">Demonstrationens vallokal</button>
+      <button class="knapp sekundär" id="btn-underlag-full">Realistiskt underlag — 8 vallokaler</button>
+    </div>
+  </div>
+
+  <!-- ================= SKIKT 1: MERKLELOGG ================= -->
+  <div class="granskarpanel">
+    <h2>Skikt 1 — Merklelogg <span>whitepaper 5.F · loggintegritet</span></h2>
+    <div class="granskarkropp">
+      <p class="inledning">
+        Varje resultatprotokoll läggs i ett append-only-träd. Roten publiceras på oberoende kanaler.
+        Nedan verifieras varje protokolls inklusionsbevis mot den publicerade roten. Du kan också
+        försöka manipulera ett protokoll och se att beviset då bryts.
+      </p>
+
+      <dl class="datafalt">
+        <dt>Publicerad Merklerot</dt><dd id="rot">—</dd>
+        <dt>Antal protokoll</dt><dd id="antal-protokoll">—</dd>
+        <dt>Träddjup</dt><dd id="träddjup">—</dd>
+        <dt>Signaturnyckel (publik)</dt><dd id="publik-nyckel">—</dd>
+      </dl>
+
+      <div id="protokoll-lista"></div>
+
+      <div class="knapprad" style="margin-top:14px">
+        <button class="knapp varning" id="btn-manipulera">Försök manipulera ett protokoll</button>
+        <button class="knapp sekundär" id="btn-återställ">Återställ</button>
+      </div>
+      <div id="manipulationsutfall"></div>
+    </div>
+  </div>
+
+  <!-- ================= SKIKT 2: RLA ================= -->
+  <div class="granskarpanel">
+    <h2>Skikt 2 — Riskbegränsad omräkning <span>whitepaper 5.F · valintegritet · BRAVO</span></h2>
+    <div class="granskarkropp">
+
+      <p class="inledning">
+        Urvalet drivs av en <strong>publik entropikälla</strong> som ingen aktör kan välja ensam.
+        Här är det tärningsslag — i en verklig ceremoni slås de offentligt och direktsänds.
+        Eftersom slumpgeneratorn är deterministisk och öppen kan vem som helst återskapa exakt
+        samma stickprov ur samma entropi.
+      </p>
+
+      <div class="tärningar" id="tärningar"></div>
+
+      <div class="knapprad" style="margin-bottom:14px">
+        <button class="knapp sekundär" id="btn-slå">Slå tärningarna</button>
+        <input type="text" class="entropi" id="entropi" placeholder="publik entropi (frö)" aria-label="Publik entropi">
+      </div>
+
+      <dl class="datafalt">
+        <dt>Sedlar i urnan</dt><dd id="urna-antal">—</dd>
+        <dt>Riskgräns (α)</dt><dd id="alfa">—</dd>
+        <dt>Rapporterat resultat</dt><dd id="rapporterat">—</dd>
+      </dl>
+
+      <div class="knapprad">
+        <button class="knapp" id="btn-audit" disabled>Kör omräkning</button>
+        <button class="knapp varning" id="btn-plantera">Plantera ett räkningsfel</button>
+        <span class="körsjustering" id="audit-status"></span>
+      </div>
+
+      <div id="audit-utfall"></div>
+    </div>
+  </div>
+
+  <div class="granskarpanel">
+    <h2>Vad har granskaren behövt lita på?</h2>
+    <div class="granskarkropp" id="sammanfattning">
+      <p class="inledning">Kör båda verifieringarna först.</p>
+    </div>
+  </div>
+
+  <div class="knapprad">
+    <a class="knapp sekundär" href="index.html">Tillbaka till demonstrationen</a>
+    <a class="knapp sekundär" href="sjalvtest.html">Kör implementationens självtest</a>
+  </div>
+
+</div>
+
+<footer class="sidfot">
+  <p>
+    <strong>Om denna demonstration.</strong> Ej en myndighetstjänst. Alla resultat, protokoll och
+    sedlar är påhittade. Partinamnen är fiktiva. Granskarsidan är medvetet fristående från
+    valsystemets kod: den delar ingen state med <code>index.html</code> och tar emot data via
+    URL-fragment eller genererar ett eget scenario. Det speglar designkravet att granskning ska
+    kunna utföras av tredje part utan tillgång till valmyndighetens infrastruktur.
+  </p>
+</footer>
+
+<script src="js/krypto.js"></script>
+<script src="js/merkle.js"></script>
+<script src="js/rla.js"></script>
+<script src="js/data.js"></script>
+<script src="js/granskare.js"></script>
+</body>
+</html>

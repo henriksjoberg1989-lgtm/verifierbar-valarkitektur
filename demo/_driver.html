@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>DEMONSTRATION — Verifierbar valarkitektur för svenska vallokaler</title>
+<meta name="description" content="Teknisk demonstration av valarkitekturen i whitepapern. Inte ett riktigt val. Ej en myndighetstjänst.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============================================================
+     Permanent demobanner. Ska inte kunna tas bort utan att
+     sidan förlorar sin märkning som demonstration.
+     ============================================================ -->
+<div class="demo-banner">
+  Teknisk demonstration — inte ett riktigt val
+  <small>Ej en myndighetstjänst · Alla personer, partier och resultat är påhittade · Utfärdarmärken är generiska placeholder-figurer, inte verkliga logotyper</small>
+</div>
+
+<header class="sidhuvud">
+  <div class="sidhuvud-inner">
+
+    <!-- Abstrakt märke. Medvetet INTE något verkligt riksvapen eller
+         någon myndighets logotyp. -->
+    <svg class="vapen" viewBox="0 0 52 60" aria-hidden="true">
+      <path d="M26 3 L49 12 V30 C49 45 38 55 26 58 C14 55 3 45 3 30 V12 Z"
+            fill="none" stroke="#c9a227" stroke-width="2.2"/>
+      <path d="M26 14 L38 19 V31 C38 38 33 43 26 46 C19 43 14 38 14 31 V19 Z"
+            fill="none" stroke="#8fb4dd" stroke-width="1.6"/>
+      <circle cx="26" cy="29" r="4.2" fill="#c9a227"/>
+      <path d="M26 36 V44 M21 40 H31" stroke="#8fb4dd" stroke-width="1.6"/>
+    </svg>
+
+    <div>
+      <h1>Verifierbar valarkitektur för svenska vallokaler</h1>
+      <p class="underrubrik">
+        Interaktiv demonstration av whitepaper v2.1 — federerad e-legitimering,
+        blindad behörighetstoken, VVPAT och offentlig verifiering
+      </p>
+    </div>
+
+    <div class="sidhuvud-meta">
+      <div><b id="meta-val"></b></div>
+      <div id="meta-lokal"></div>
+      <div id="meta-status"></div>
+    </div>
+
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- ======================= HUVUDFLÖDE ======================= -->
+  <main id="steg-container" aria-live="polite"></main>
+
+  <!-- ==================== AKTÖRSLOGGAR ==================== -->
+  <aside class="loggpanel">
+
+    <div class="loggrubrik">
+      <h2>Vad ser varje aktör?</h2>
+      <p>Fylls på i takt med att flödet körs. Rött = uppgift aktören <em>inte</em> har tillgång till.</p>
+    </div>
+
+    <div class="loggyta" id="logg-yta"></div>
+
+    <div class="korrelationspanel">
+      <h3>Korrelationsangrepp mot valhemligheten</h3>
+      <div class="korrelationskropp">
+        <p>
+          Testar om någon aktör — eller alla aktörer i samverkan — kan koppla en
+          väljare till en avgiven röst. Jämför arkitekturen med och utan den
+          blindade behörighetstoken.
+        </p>
+
+        <div class="lägesväxlare">
+          <button class="lägesknapp" id="läge-blind" aria-pressed="true">
+            v2.1 — med blindad token
+          </button>
+          <button class="lägesknapp" id="läge-direkt" aria-pressed="false">
+            v1-modellen — direkt legitimering vid terminalen
+          </button>
+        </div>
+
+        <div class="knapprad">
+          <button class="knapp varning" id="kör-angrepp" disabled>
+            Kör angrepp
+          </button>
+          <span class="körsjustering" id="angrepp-status"></span>
+        </div>
+
+        <div class="angreppsresultat" id="angrepp-resultat"></div>
+      </div>
+    </div>
+
+    <div class="korrelationspanel">
+      <h3>Oberoende granskning</h3>
+      <div class="korrelationskropp">
+        <p>
+          Granskarsidan kräver inget förtroende för denna applikation. Den
+          verifierar Merkleloggens rot och kör en riskbegränsad omräkning mot
+          offentlig entropi.
+        </p>
+        <div class="knapprad">
+          <a class="knapp sekundär" href="granskare.html" id="länk-granskare">
+            Öppna granskarsidan
+          </a>
+          <a class="knapp sekundär" href="sjalvtest.html">
+            Kör självtest
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </aside>
+</div>
+
+<footer class="sidfot">
+  <p>
+    <strong>Om denna demonstration.</strong>
+    Sidan illustrerar arkitekturen i <em>Verifierbar Valarkitektur för Svenska
+    Vallokaler</em>, version 2.1. Den är inte en myndighetstjänst, inte kopplad
+    till något val och utför ingen riktig röstregistrering. Alla personuppgifter,
+    partier, vallokaler och resultat är påhittade. Märkena för
+    e-legitimationsutfärdare är generiska geometriska figurer och återger inte
+    Polismyndighetens, Finansiell ID-Teknik BID AB:s, Frejas eller någon annan
+    organisation logotyp eller varumärke. Namnen används endast för att beskriva
+    vilka verkliga utfärdare som avses i federationen.
+  </p>
+  <p>
+    <strong>Om koden.</strong> Kryptografin är implementerad i ren JavaScript utan
+    beroende av webbläsarens inbyggda krypto-API, i avsikt att vara fullt läsbar.
+    Se <code>js/krypto.js</code>, <code>js/merkle.js</code> och <code>js/rla.js</code>.
+    Kör <a class="länk" href="sjalvtest.html">självtestet</a> för att verifiera att
+    implementationen uppfyller de egenskaper den påstår sig ha.
+    <strong>Detta är demonstrationskod och ska inte användas i produktion.</strong>
+  </p>
+</footer>
+
+<script src="js/krypto.js"></script>
+<script src="js/merkle.js"></script>
+<script src="js/rla.js"></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script src="_driver.js"></script>
+</body>
+</html>

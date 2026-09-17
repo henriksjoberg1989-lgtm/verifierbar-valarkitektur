@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>DEMONSTRATION — Självtest av kryptoimplementationen</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .testlayout { max-width: 1000px; margin: 0 auto; padding: 24px 28px 60px; }
+  table.test { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 22px; }
+  table.test th, table.test td { padding: 8px 11px; text-align: left; border-bottom: 1px solid var(--linje); vertical-align: top; }
+  table.test th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-mjuk); background: #fbfcfd; }
+  table.test td.status { width: 84px; font-weight: 700; font-family: var(--mono); font-size: 11.5px; }
+  td.status.ok { color: var(--grön); }
+  td.status.fel { color: var(--röd); }
+  td.status.kör { color: var(--amber); }
+  table.test td.det { font-family: var(--mono); font-size: 11px; color: var(--text-mjuk); word-break: break-all; }
+  .grupprubrik { font-size: 13px; font-weight: 700; color: var(--blå); text-transform: uppercase; letter-spacing: 0.07em; margin: 26px 0 8px; padding-bottom: 5px; border-bottom: 2px solid var(--linje); }
+  #summering { font-size: 15px; }
+</style>
+</head>
+<body>
+
+<div class="demo-banner">
+  Teknisk demonstration — inte ett riktigt val
+  <small>Självtest av kryptoimplementationen · Ej en myndighetstjänst</small>
+</div>
+
+<header class="sidhuvud">
+  <div class="sidhuvud-inner">
+    <div>
+      <h1>Självtest</h1>
+      <p class="underrubrik">
+        Verifierar att implementationen faktiskt uppfyller de egenskaper den påstår sig ha.
+        En granskare ska kunna köra detta själv, i sin egen webbläsare.
+      </p>
+    </div>
+    <div class="sidhuvud-meta">
+      <div><b id="antal-tester">—</b></div>
+      <div id="tid"></div>
+    </div>
+  </div>
+</header>
+
+<div class="testlayout">
+
+  <div class="notis">
+    <strong>Varför denna sida finns</strong>
+    <p>
+      Whitepaperns tes är att förtroende kommer av att kunna kontrollera, inte av att lita på.
+      Då gäller det även demonstrationens egen kod. Inget på denna sida kräver att du litar på
+      att implementationen är korrekt — den testas mot publikationerade testvektorer och mot
+      de säkerhetsegenskaper som utlovas.
+    </p>
+  </div>
+
+  <div class="knapprad" style="margin:16px 0 24px">
+    <button class="knapp" id="btn-kör">Kör alla tester</button>
+    <span class="körsjustering" id="status"></span>
+    <a class="knapp sekundär" href="index.html">Tillbaka till demonstrationen</a>
+  </div>
+
+  <div id="resultat">
+    <p class="inledning">Inga tester körda ännu.</p>
+  </div>
+
+  <div id="summering"></div>
+
+</div>
+
+<footer class="sidfot">
+  <p>
+    <strong>Observera.</strong> Testerna verifierar att implementationen är internkonsistent och
+    stämmer med publicerade testvektorer. De utgör <em>ingen</em> formell verifiering av
+    kryptografisk säkerhet, och demonstrationskoden ska inte användas i produktion.
+  </p>
+</footer>
+
+<script src="js/krypto.js"></script>
+<script src="js/merkle.js"></script>
+<script src="js/rla.js"></script>
+<script src="js/data.js"></script>
+<script src="js/sjalvtest.js"></script>
+</body>
+</html>
