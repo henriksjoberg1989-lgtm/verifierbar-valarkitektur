@@ -18,7 +18,7 @@ Arkitekturen digitaliserar räkningen, transporten och granskningen — inte sj�
 
 ```
 # Alternativt via GitHub Pages:
-https://<användarnamn>.github.io/verifierbar-valarkitektur/demo/index.html
+https://henriksjoberg1989-lgtm.github.io/verifierbar-valarkitektur/index.html
 ```
 
 Klicka "Generera RSA-2048-nyckel" och följ flödet steg för steg. I sidokolumnen visas vad varje aktör ser — och vad den inte ser.
