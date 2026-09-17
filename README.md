@@ -88,7 +88,7 @@ Valmyndigheten har ett regeringsuppdrag (beslutat 25 september 2025) att analyse
 
 ## Licens
 
-Källkod och specifikation är fritt tillgängliga för granskning.
+[CC BY 4.0](LICENSE) — källkod och specifikation är fritt tillgängliga för granskning.
 
 ## Kontakt
 
